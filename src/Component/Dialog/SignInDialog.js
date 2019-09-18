@@ -5,18 +5,22 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
-
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import validate from 'validate.js';
+import constraints from '../../constrains';
+
 
 class SignInDialog extends Component {
 
     constructor(props) {
         super(props);
-        this.setState({
+        this.state = {
             email: "",
             password: "",
-        });
+           open: false,
+           errors: null
+        };
     }
 
     componentWillMount () {
@@ -41,6 +45,22 @@ class SignInDialog extends Component {
         this.setState({ open : false});
         this.props.closeDialog();
     }
+
+    handleSignInClick = () => {
+        //this.handleClose();
+        const errors = validate({
+            email: this.state.email,
+            password: this.state.password
+          }, {
+            email: constraints.email,
+            password: constraints.password
+          });
+          console.log(errors.password)
+          if (errors) {
+            this.setState({ errors });
+          }
+    }
+    
     
     render() {
         return (
@@ -57,34 +77,34 @@ class SignInDialog extends Component {
                         <form>
                             <TextField
                             autoComplete="email"
-                            //error={!!(errors && errors.emailAddress)}
+                            error={!!(this.state.errors && this.state.errors.email)}
                             fullWidth
-                           // helperText={(errors && errors.emailAddress) ? errors.emailAddress[0] : ''}
+                            helperText={(this.state.errors && this.state.errors.email) ? this.state.errors.email[0] : ''}
                             margin="normal"
                             onChange={this.handleEmailAddressChange}
                             placeholder="E-mail address"
                             required
                             type="email"
-                            //value={emailAddress}
+                            value={this.state.email}
                             />
 
                             <TextField
                             autoComplete="current-password"
-                            //error={!!(errors && errors.password)}
+                            error={!!(this.state.errors && this.state.errors.password)}
                             fullWidth
-                            helperText=""
+                            helperText={(this.state.errors && this.state.errors.password) ? this.state.errors.password[0] : ''}
                             margin="normal"
                             onChange={this.handlePasswordChange}
                             placeholder="Password"
                             required
                             type="password"
-                            //value={password}
+                            value={this.state.password}
                             />
                         </form>
                     </DialogContent>
                     <DialogActions>
                         <Button color="primary" onClick={() => this.handleClose()}>Cancel</Button>
-                        <Button color="primary"  variant="contained" onClick = {() => this.handleClose()}>Sign In</Button>
+                        <Button color="primary"  variant="contained" onClick = {() => this.handleSignInClick()}>Sign In</Button>
                     </DialogActions>
                 </Dialog>
             </div>
