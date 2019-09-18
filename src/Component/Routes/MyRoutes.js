@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from "react-router-dom";
 import Login from "../Layout/Login";
-import SignInDialog from "../Dialog/SignInDialog";
+// import SignInDialog from "../Dialog/SignInDialog";
 
 class MyRoutes extends Component {
     render() {

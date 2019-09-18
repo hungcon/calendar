@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import SignInDialog from '../Dialog/SignInDialog';
+import SignUpDialog from '../Dialog/SignUpDialog';
 
 const styles = (theme) => ({
     signUpButton: {
@@ -24,11 +25,15 @@ class Login extends Component {
                 <Toolbar variant="regular">
                 <Typography style={{ flexGrow: 1 }} color="inherit" variant="h6">Calendar Management</Typography>
                     <React.Fragment>
-                        <Button  color="secondary"  className={classes.signUpButton} variant="contained" >Sign Up</Button>
+                        <Button  color="secondary"  className={classes.signUpButton} variant="contained"  onClick={() =>this.props.displaySignUpDialog()} >Sign Up</Button>
                         <Button color="secondary"  variant="contained" onClick={() =>this.props.displaySignInDialog()}>Sign In</Button>
                     </React.Fragment>
-                    {this.props.handleSignInDialog &&
+                    {this.props.openSignInDialog &&
                         <SignInDialog></SignInDialog>
+                    }
+
+                    {this.props.openSignUpDialog &&
+                        <SignUpDialog></SignUpDialog>
                     }
                     
                 </Toolbar>
@@ -41,7 +46,8 @@ class Login extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        handleSignInDialog: state.handleSignInDialog
+        openSignInDialog: state.openSignInDialog,
+        openSignUpDialog: state.openSignUpDialog
     }
 }
 
@@ -49,6 +55,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         displaySignInDialog: () => {
             dispatch({type: 'DISPLAY_SIGNIN_DIALOG'})
+        },
+        displaySignUpDialog: () => {
+            dispatch({type: 'DISPLAY_SIGNUP_DIALOG'})
         }
     }
 }

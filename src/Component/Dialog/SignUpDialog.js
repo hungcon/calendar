@@ -9,13 +9,14 @@ import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
-class SignInDialog extends Component {
+class SignUpDialog extends Component {
 
     constructor(props) {
         super(props);
         this.setState({
             email: "",
             password: "",
+            confirmPassword: "",
         });
     }
 
@@ -37,6 +38,12 @@ class SignInDialog extends Component {
         });
     }
 
+    handleConfirmPasswordChange = (event) => {
+        this.setState({
+            confirmPassword: event.target.value
+        });
+    }
+
     handleClose = () => {
         this.setState({ open : false});
         this.props.closeDialog();
@@ -47,12 +54,11 @@ class SignInDialog extends Component {
             <div>
                 <Dialog open={this.state.open} onClose={this.handleClose}>
                     <DialogTitle>
-                    Sign in to your account
+                    Sign up 
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Some features might be unavailable until you sign in.
-                            While you're signed in you can manage your account.
+                            sign up
                         </DialogContentText>
                         <form>
                             <TextField
@@ -80,11 +86,24 @@ class SignInDialog extends Component {
                             type="password"
                             //value={password}
                             />
+
+                            <TextField
+                            autoComplete="current-password"
+                            //error={!!(errors && errors.password)}
+                            fullWidth
+                            helperText=""
+                            margin="normal"
+                            onChange={this.handleConfirmPasswordChange}
+                            placeholder="Confirm Password"
+                            required
+                            type="password"
+                            //value={password}
+                            />
                         </form>
                     </DialogContent>
                     <DialogActions>
                         <Button color="primary" onClick={() => this.handleClose()}>Cancel</Button>
-                        <Button color="primary"  variant="contained" onClick = {() => this.handleClose()}>Sign In</Button>
+                        <Button color="primary"  variant="contained" onClick = {() => this.handleClose()}>Sign Up</Button>
                     </DialogActions>
                 </Dialog>
             </div>
@@ -94,9 +113,9 @@ class SignInDialog extends Component {
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         closeDialog: () => {
-            dispatch({type: 'DISPLAY_SIGNIN_DIALOG'})
+            dispatch({type: 'DISPLAY_SIGNUP_DIALOG'})
         }
     }
 }
 
-export default connect(null, mapDispatchToProps)(SignInDialog);
+export default connect(null, mapDispatchToProps)(SignUpDialog);
