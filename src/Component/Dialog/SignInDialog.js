@@ -23,7 +23,7 @@ class SignInDialog extends Component {
         };
     }
 
-    componentWillMount () {
+    UNSAFE_componentWillMount () {
         this.setState({
             open: true
         });
@@ -55,9 +55,11 @@ class SignInDialog extends Component {
             email: constraints.email,
             password: constraints.password
           });
-          console.log(errors.password)
+          console.log(!!(this.state.errors && this.state.errors.password))
           if (errors) {
             this.setState({ errors });
+          } else {
+              this.setState({ errors: null})
           }
     }
     

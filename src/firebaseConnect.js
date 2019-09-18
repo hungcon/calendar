@@ -1,5 +1,4 @@
 import * as firebase from 'firebase';
-
 var firebaseConfig = {
     apiKey: "AIzaSyDpyl3l_F1QxZAe0q-P_FpmzFYr8pSrROA",
     authDomain: "calendarmanagement-cb8a9.firebaseapp.com",
@@ -21,5 +20,5 @@ var firebaseConfig = {
 const db = firebase.firestore();
 db.collection('user_account').get().then(function(snapshot){
     const data = snapshot.docs.map(doc => doc.data());
-  //console.log(data); // array of cities objects
+    console.log(data); // array of cities objects
 })

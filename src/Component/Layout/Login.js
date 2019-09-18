@@ -4,6 +4,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
 import { connect } from 'react-redux';
 import SignInDialog from '../Dialog/SignInDialog';
 import SignUpDialog from '../Dialog/SignUpDialog';
@@ -35,9 +36,12 @@ class Login extends Component {
                     {this.props.openSignUpDialog &&
                         <SignUpDialog></SignUpDialog>
                     }
-                    
+                 
                 </Toolbar>
                 </AppBar>
+                <Container fixed>
+                    <Typography component="div" style={{ backgroundColor: '#cfe8fc', height: '100vh' }} />
+                </Container>   
             </div>
         );
     }

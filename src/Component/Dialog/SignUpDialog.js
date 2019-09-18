@@ -13,14 +13,14 @@ class SignUpDialog extends Component {
 
     constructor(props) {
         super(props);
-        this.setState({
+        this.state = {
             email: "",
             password: "",
             confirmPassword: "",
-        });
+        };
     }
 
-    componentWillMount () {
+    UNSAFE_componentWillMount () {
         this.setState({
             open: true
         });
