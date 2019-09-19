@@ -17,8 +17,8 @@ var firebaseConfig = {
 //       console.log(snapshot.val())
 //   })
 
-const db = firebase.firestore();
-db.collection('user_account').get().then(function(snapshot){
-    const data = snapshot.docs.map(doc => doc.data());
-    console.log(data); // array of cities objects
-})
+// const db = firebase.firestore();
+// db.collection('user_account').get().then(function(snapshot){
+//     const data = snapshot.docs.map(doc => doc.data());
+//     console.log(data); // array of cities objects
+// })

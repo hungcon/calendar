@@ -3,10 +3,6 @@ var constraints = {
       presence: {
         "allowEmpty": false
       },
-      exclusion: {
-        within: ["nicklas"],
-        message: "'%{value}' is not allowed"
-      },
       email: true
     },
     password: {
@@ -15,8 +11,12 @@ var constraints = {
         },
       length: {
         minimum: 6,
-        message: "must be at least 6 characters"
+        maximum: 15,
+        message: "must be at least 6 characters and less than 15 characters"
       }
+    },
+    confirmPassword: {
+      equality: "password"
     }
   };
 

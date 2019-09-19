@@ -7,8 +7,11 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
 import validate from 'validate.js';
 import constraints from '../../constrains';
+import {firebaseConnect} from '../../firebaseConnect';
+import readingTime from 'reading-time';
 
 
 class SignInDialog extends Component {
@@ -18,8 +21,13 @@ class SignInDialog extends Component {
         this.state = {
             email: "",
             password: "",
-           open: false,
-           errors: null
+            open: false,
+            errors: null,
+            snackbar: {
+                autoHideDuration: 0,
+                message: '',
+                open: false
+           },
         };
     }
 
@@ -28,46 +36,89 @@ class SignInDialog extends Component {
             open: true
         });
     }
+    handleKeyPress = (event) => {
+      const key = event.key;
+  
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+        return;
+      }
+  
+      if (key === 'Enter') {
+        this.handleSignInClick();
+      }
+    };
 
-    handleEmailAddressChange = (event) => {
-        this.setState({
-            email: event.target.value
-        });
-    }
-
-    handlePasswordChange = (event) => {
-        this.setState({
-            password: event.target.value
-        });
-    }
+    onEmailChange = event => {
+        this.setState({email: event.target.value});
+      };
+    onPasswordChange = event => {
+        this.setState({password: event.target.value});
+      };
 
     handleClose = () => {
         this.setState({ open : false});
         this.props.closeDialog();
     }
 
-    handleSignInClick = () => {
-        //this.handleClose();
+    openSnackbar = (message) => {
+        this.setState({
+          snackbar: {
+            autoHideDuration: readingTime(message).time * 2,
+            message,
+            open: true
+          }
+        });
+      };
+
+    handleSignInClick = () => {  
+        const { email, password } = this.state;    
         const errors = validate({
-            email: this.state.email,
-            password: this.state.password
+            email: email,
+            password: password
           }, {
             email: constraints.email,
             password: constraints.password
           });
-          console.log(!!(this.state.errors && this.state.errors.password))
           if (errors) {
             this.setState({ errors });
           } else {
-              this.setState({ errors: null})
-          }
+              firebaseConnect.auth().signInWithEmailAndPassword(email, password)
+              .then( () => {
+                window.localStorage.setItem('email', email);
+                this.setState({ 
+                    errors: null,
+                });
+                this.props.signIn();
+                this.handleClose();
+              })
+              .catch((reason) => {
+                const code = reason.code;
+                const message = reason.message;
+        
+                switch (code) {
+                  case 'auth/email-already-in-use':
+                  case 'auth/invalid-email':
+                  case 'auth/operation-not-allowed':
+                  case 'auth/weak-password':
+                    this.openSnackbar(message);
+                    return;
+        
+                  default:
+                    this.openSnackbar(message);
+                    return;
+                }
+                })
+        }
     }
     
     
     render() {
+        const { snackbar } = this.state; 
+        const { open } = this.state;
+        const { email, password, errors } = this.state;
         return (
             <div>
-                <Dialog open={this.state.open} onClose={this.handleClose}>
+                <Dialog open={open} onClose={this.handleClose} onKeyPress={this.handleKeyPress}>
                     <DialogTitle>
                     Sign in to your account
                     </DialogTitle>
@@ -79,45 +130,55 @@ class SignInDialog extends Component {
                         <form>
                             <TextField
                             autoComplete="email"
-                            error={!!(this.state.errors && this.state.errors.email)}
+                            error={!!(errors && errors.email)}
                             fullWidth
-                            helperText={(this.state.errors && this.state.errors.email) ? this.state.errors.email[0] : ''}
+                            helperText={(errors && errors.email) ? errors.email[0] : ''}
                             margin="normal"
-                            onChange={this.handleEmailAddressChange}
+                            onChange={this.onEmailChange}
                             placeholder="E-mail address"
                             required
                             type="email"
-                            value={this.state.email}
+                            value={email}
                             />
 
                             <TextField
                             autoComplete="current-password"
-                            error={!!(this.state.errors && this.state.errors.password)}
+                            error={!!(errors && errors.password)}
                             fullWidth
-                            helperText={(this.state.errors && this.state.errors.password) ? this.state.errors.password[0] : ''}
+                            helperText={(errors && errors.password) ? errors.password[0] : ''}
                             margin="normal"
-                            onChange={this.handlePasswordChange}
+                            onChange={this.onPasswordChange}
                             placeholder="Password"
                             required
                             type="password"
-                            value={this.state.password}
+                            value={password}
                             />
                         </form>
                     </DialogContent>
                     <DialogActions>
                         <Button color="primary" onClick={() => this.handleClose()}>Cancel</Button>
-                        <Button color="primary"  variant="contained" onClick = {() => this.handleSignInClick()}>Sign In</Button>
+                        <Button color="primary" disabled={(!email || !password)}  variant="contained" onClick = {() => this.handleSignInClick()}>Sign In</Button>
                     </DialogActions>
                 </Dialog>
+                <Snackbar
+                  autoHideDuration={snackbar.autoHideDuration}
+                  message={snackbar.message}
+                  open={snackbar.open}
+                  onClose={this.closeSnackbar}
+                />
             </div>
         );
     }
 }
+
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         closeDialog: () => {
             dispatch({type: 'DISPLAY_SIGNIN_DIALOG'})
-        }
+        },
+        signIn: () => {
+            dispatch({type: 'SIGNINED'})
+        },
     }
 }
 
