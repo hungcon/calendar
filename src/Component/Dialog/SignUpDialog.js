@@ -1,5 +1,4 @@
 import React, { Component  } from 'react';
-import {connect} from 'react-redux';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -53,10 +52,11 @@ class SignUpDialog extends Component {
         });
     }
 
-    handleClose = () => {
-        this.setState({ open : false});
-        this.props.closeDialog();
-    }
+    onCancelClick = () => {
+        this.setState({open: false});
+        this.props.closeSignUp();
+      }
+
     openSnackbar = (message) => {
         this.setState({
           snackbar: {
@@ -83,12 +83,11 @@ class SignUpDialog extends Component {
           } else {
             firebaseConnect.auth().createUserWithEmailAndPassword(email, password)
             .then( () => {
-              window.localStorage.setItem('email', email);
+              window.localStorage.setItem('email', JSON.stringify(email));
               this.setState({ 
                   errors: null,
               });
-              this.props.signIn();
-              this.handleClose();
+              this.props.history.push({pathname: 'home'});  
             })
             .catch((reason) => {
               const code = reason.code;
@@ -117,7 +116,7 @@ class SignUpDialog extends Component {
         const { email, password, confirmPassword } = this.state;
         return (
             <div>
-                <Dialog open={open} onClose={this.handleClose}>
+                <Dialog open={open} onClose={this.onCancelClick}>
                     <DialogTitle>
                     Sign up for an account
                     </DialogTitle>
@@ -167,7 +166,7 @@ class SignUpDialog extends Component {
                         </form>
                     </DialogContent>
                     <DialogActions>
-                        <Button color="primary" onClick={() => this.handleClose()}>Cancel</Button>
+                        <Button color="primary" onClick={() => this.onCancelClick()}>Cancel</Button>
                         <Button color="primary" disabled={(!email|| !password || !confirmPassword)}  variant="contained" onClick = {() => this.handleSignUpClick()}>Sign Up</Button>
                     </DialogActions>
                 </Dialog>
@@ -181,15 +180,5 @@ class SignUpDialog extends Component {
         );
     }
 }
-const mapDispatchToProps = (dispatch, ownProps) => {
-    return {
-        closeDialog: () => {
-            dispatch({type: 'DISPLAY_SIGNUP_DIALOG'})
-        },
-        signIn: () => {
-            dispatch({type: 'SIGNINED'})
-        },
-    }
-}
 
-export default connect(null, mapDispatchToProps)(SignUpDialog);
+export default (SignUpDialog);

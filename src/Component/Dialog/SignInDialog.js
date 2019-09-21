@@ -1,5 +1,4 @@
 import React, { Component  } from 'react';
-import {connect} from 'react-redux';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -12,7 +11,6 @@ import validate from 'validate.js';
 import constraints from '../../constrains';
 import {firebaseConnect} from '../../firebaseConnect';
 import readingTime from 'reading-time';
-
 
 class SignInDialog extends Component {
 
@@ -44,7 +42,7 @@ class SignInDialog extends Component {
       }
   
       if (key === 'Enter') {
-        this.handleSignInClick();
+        this.signIn();
       }
     };
 
@@ -54,11 +52,6 @@ class SignInDialog extends Component {
     onPasswordChange = event => {
         this.setState({password: event.target.value});
       };
-
-    handleClose = () => {
-        this.setState({ open : false});
-        this.props.closeDialog();
-    }
 
     openSnackbar = (message) => {
         this.setState({
@@ -70,7 +63,7 @@ class SignInDialog extends Component {
         });
       };
 
-    handleSignInClick = () => {  
+    signIn = () => {  
         const { email, password } = this.state;    
         const errors = validate({
             email: email,
@@ -84,12 +77,11 @@ class SignInDialog extends Component {
           } else {
               firebaseConnect.auth().signInWithEmailAndPassword(email, password)
               .then( () => {
-                window.localStorage.setItem('email', email);
+                localStorage.setItem('email', email);
                 this.setState({ 
                     errors: null,
                 });
-                this.props.signIn();
-                this.handleClose();
+                this.props.history.push({pathname: 'home'});  
               })
               .catch((reason) => {
                 const code = reason.code;
@@ -102,15 +94,18 @@ class SignInDialog extends Component {
                   case 'auth/weak-password':
                     this.openSnackbar(message);
                     return;
-        
                   default:
                     this.openSnackbar(message);
                     return;
                 }
                 })
+                
         }
     }
-    
+    onCancelClick = () => {
+      this.setState({open: false});
+      this.props.closeSignIn();
+    }
     
     render() {
         const { snackbar } = this.state; 
@@ -118,7 +113,7 @@ class SignInDialog extends Component {
         const { email, password, errors } = this.state;
         return (
             <div>
-                <Dialog open={open} onClose={this.handleClose} onKeyPress={this.handleKeyPress}>
+                <Dialog open={open} onClose={this.onCancelClick} onKeyPress={this.handleKeyPress}>
                     <DialogTitle>
                     Sign in to your account
                     </DialogTitle>
@@ -156,8 +151,8 @@ class SignInDialog extends Component {
                         </form>
                     </DialogContent>
                     <DialogActions>
-                        <Button color="primary" onClick={() => this.handleClose()}>Cancel</Button>
-                        <Button color="primary" disabled={(!email || !password)}  variant="contained" onClick = {() => this.handleSignInClick()}>Sign In</Button>
+                        <Button color="primary" onClick={() => this.onCancelClick()}>Cancel</Button>
+                        <Button color="primary" disabled={(!email || !password)}  variant="contained" onClick = {() => this.signIn()}>Sign In</Button>
                     </DialogActions>
                 </Dialog>
                 <Snackbar
@@ -170,16 +165,4 @@ class SignInDialog extends Component {
         );
     }
 }
-
-const mapDispatchToProps = (dispatch, ownProps) => {
-    return {
-        closeDialog: () => {
-            dispatch({type: 'DISPLAY_SIGNIN_DIALOG'})
-        },
-        signIn: () => {
-            dispatch({type: 'SIGNINED'})
-        },
-    }
-}
-
-export default connect(null, mapDispatchToProps)(SignInDialog);
+export default (SignInDialog);
