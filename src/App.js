@@ -4,7 +4,6 @@ import { Route , Switch} from "react-router-dom";
 import PrivateRoute from './Component/Routes/PrivateRoute';
 import Bar from './Component/Layout/Bar';
 import Home from './Component/Layout/Home';
-import Schedule from './Component/Layout/Schedule';
 class App extends Component {
 
   render() {
@@ -13,7 +12,6 @@ class App extends Component {
         <Switch>
             <Route path="/" exact component={Bar} /> 
             <PrivateRoute path="/home" exact component={Home} /> 
-            <PrivateRoute path="/schedule" exact component={Schedule} /> 
         </Switch>
       </Router>
 

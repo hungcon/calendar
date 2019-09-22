@@ -17,7 +17,35 @@ var constraints = {
     },
     confirmPassword: {
       equality: "password"
+    },
+    clientName: {
+      presence: {
+          "allowEmpty": false
+      }
+    },
+    startTime: {
+      presence: {
+          "allowEmpty": false
+      }
+    },
+    duration: {
+      presence: {
+          "allowEmpty": false
+      },
+      numericality: true,
+      notLessThanOrEqualTo: 0
+    },
+    location: {
+      presence: {
+          "allowEmpty": false
+      }
+    },
+    staffName: {
+      presence: {
+          "allowEmpty": false
+      }
     }
+
   };
 
 export default constraints;

@@ -8,30 +8,20 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import PersonIcon from '@material-ui/icons/Person';
 import {firebaseConnect} from '../../firebaseConnect';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
  import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+import { withStyles } from '@material-ui/core/styles';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import {data} from '../../events'
-  // const events = [];
-  //     const db = firebaseConnect.firestore();
-  //       db.collection('events').get().then(function(snapshot){
-  //         const data = snapshot.docs.map(doc => doc.data());
-        
-  //         data.forEach((value) => {
-  //         //  console.log(localStorage.getItem('email') === value.user)
-  //           if(localStorage.getItem('email') === value.user){
-  //             var eventItem = {
-  //               title: "Hẹn với " + value.client_name,
-  //               start: new Date(value.start_time.seconds*1000),
-  //               end: new Date(value.start_time.seconds*1000 + value.duration*3600000),
-  //             }
-  //             events.push(eventItem);
-  //           }
-  //         });
-  //     })
-      // this.setState({events: events});
-
+import AddNewEventDialog from '../Dialog/AddNewEventDialog';
+import DetailEventDialog from '../Dialog/DetailEventDialog';
 const localizer = momentLocalizer(moment); 
+const styles = (theme) => ({
+  fab: {
+    margin: theme.spacing(2),
+  }
+});
 class Home extends Component {
     constructor(props) {
         super(props);
@@ -39,11 +29,11 @@ class Home extends Component {
             menu: {
                 anchorEl: null
               },
-              events: data,
+             events: [],
+             isAddEvent: false,
         };
     }
-
-   
+ 
     openMenu = (event) => {
         const anchorEl = event.currentTarget;
     
@@ -77,27 +67,50 @@ class Home extends Component {
           // An error happened.
         });     
     } 
-    
 
     componentWillMount() {
-      console.log("will")
+      const events = [];
+      const db = firebaseConnect.firestore();
+      db.collection('events').where("user", "==", localStorage.getItem('email')).get()
+      .then(function (snapshot) {
+          snapshot.forEach(function(doc){
+            var eventItem = {
+              id: doc.id,
+              client_name: doc.data().client_name,
+              title: "Hẹn với " + doc.data().client_name,
+              start: new Date(doc.data().start_time.seconds*1000),
+              end: new Date(doc.data().start_time.seconds*1000 + doc.data().duration*3600000),
+              location: doc.data().location,
+              staff_name: doc.data().staff_name,
+              duration: doc.data().duration
+            }
+              events.push(eventItem);
+          })
+        })
+        this.setState({events: events});
     }
+
     componentDidMount() {
-      console.log('Home')
       
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-      if(this.props.history.path === nextProps.history.path) return true;
-      return false;
+    addEvent= () => {  
+      this.setState({isAddEvent: true});
     }
-  
-    eventFun = () => {
-      //hiện lên bảng sửa chữa
+    // shouldComponentUpdate(nextState) {
+    //   if(this.state.isAddEvent !== nextState.isAddEvent){
+    //     return true;
+    //   } return false;
+    // }
+
+    showDetailEvent = (detailEvent) => {
+      this.setState({
+        detailEvent: detailEvent,
+        isDetailEvent: true
+      });
     }
     render() {
-      console.log("render");
-
+      const {classes} = this.props;
         const { menu } = this.state;
         return (
             <div>
@@ -117,6 +130,9 @@ class Home extends Component {
                 </Toolbar>
                 </AppBar>
                 <Container fixed>
+                    <Fab color="primary" aria-label="add" className={classes.fab} onClick={this.addEvent}>
+                      <AddIcon />
+                    </Fab>
                     <div style={{ height: '500pt'}}> 
                         <Calendar
                         events={this.state.events}
@@ -124,13 +140,25 @@ class Home extends Component {
                         endAccessor="end"
                         defaultDate={moment().toDate()}
                         localizer={localizer}
-                        onSelectEvent={this.eventFun()}
+                        onSelectEvent={(detailEvent) => this.showDetailEvent(detailEvent)}
                         />
                      </div>
-                </Container>   
+                </Container>
+                {this.state.isAddEvent && 
+                      <AddNewEventDialog closeAddEvent = { () => {this.setState({isAddEvent: false})}}/>}
+                {this.state.isDetailEvent && 
+                    <DetailEventDialog 
+                      clientName={this.state.detailEvent.client_name} 
+                      location={this.state.detailEvent.location}
+                      duration={this.state.detailEvent.duration}
+                      staffName={this.state.detailEvent.staff_name}
+                      startTime={this.state.detailEvent.start}
+                      id={this.state.detailEvent.id}
+                      closeDetailEvent = {() => this.setState({isDetailEvent: false})}
+                      />}
             </div>
         );
     }
 }
 
-export default Home;
+export default withStyles(styles)(Home);
