@@ -19,7 +19,7 @@ class DetailEventDialog extends Component {
         super(props);
         this.state = {
             open: true,
-            isDeleteEvent: false,
+            isScheduleChange: false,
             confirmDeleteState: false,
             clientName: this.props.clientName,
             duration: this.props.duration,
@@ -68,7 +68,7 @@ class DetailEventDialog extends Component {
           user: localStorage.getItem('email'),
           staff_name: this.state.staffName
         })
-        this.setState({isDeleteEvent: true, open: false});
+        this.setState({isScheduleChange: true, open: false});
 
       }
 
@@ -81,7 +81,7 @@ class DetailEventDialog extends Component {
           const db = firebaseConnect.firestore();
           db.collection("events").doc(this.state.id).delete().then(() => {
             this.setState({
-              isDeleteEvent: true,
+              isScheduleChange: true,
               open: false
             });
             
@@ -166,7 +166,7 @@ class DetailEventDialog extends Component {
                     </DialogActions>
                 </Dialog>
 
-                {this.state.isDeleteEvent &&
+                {this.state.isScheduleChange &&
                   <NotificationDialog />
                 }
                

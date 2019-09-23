@@ -25,6 +25,7 @@ class AddNewEventDialog extends Component {
             duration: 0,
             location:'',
             staffName: '',
+            isAddEventOK: false
         };
     }
 
@@ -88,16 +89,26 @@ class AddNewEventDialog extends Component {
             }
             const db = firebaseConnect.firestore();
               db.collection("events").add(newEvent)
-            .then((docRef) => {
+            .then(function (docRef) {
                 console.log("Document written with ID: ", docRef.id);
-                this.setState({isAddEventSuccess: true});
-            })
+                this.setState({isAddEventOK: true, open: false});
+                console.log(this.state.isAddEventOK)
+               
+            }.bind(this))
             .catch(function(error) {
                 console.error("Error adding document: ", error);
             });
-            this.props.closeAddEvent();
-          }  
+            
+          } 
+           
       }
+
+      // shouldComponentUpdate(nextState) {
+      //   if(this.state.isAddEventOK !== nextState.isAddEventOK){
+      //     return true;
+      //   }
+      //   return false;
+      // }
 
     render() {
         
@@ -174,7 +185,7 @@ class AddNewEventDialog extends Component {
                         <Button color="primary" onClick={this.addNewEvent}  variant="contained" >Add</Button>
                     </DialogActions>
                 </Dialog>
-                {this.state.isAddEventSuccess &&
+                {this.state.isAddEventOK &&
                   <NotificationDialog />
                 }
             </div>

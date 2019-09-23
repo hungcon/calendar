@@ -69,8 +69,8 @@ class Home extends Component {
     } 
 
     componentWillMount() {
-      const events = [];
-      const db = firebaseConnect.firestore();
+      const eventsDB = [];
+      var db = firebaseConnect.firestore();
       db.collection('events').where("user", "==", localStorage.getItem('email')).get()
       .then(function (snapshot) {
           snapshot.forEach(function(doc){
@@ -84,10 +84,11 @@ class Home extends Component {
               staff_name: doc.data().staff_name,
               duration: doc.data().duration
             }
-              events.push(eventItem);
-          })
-        })
-        this.setState({events: events});
+            eventsDB.push(eventItem);
+          });
+          this.setState({events: eventsDB});
+        }.bind(this))
+        
     }
 
     componentDidMount() {
@@ -97,11 +98,11 @@ class Home extends Component {
     addEvent= () => {  
       this.setState({isAddEvent: true});
     }
-    // shouldComponentUpdate(nextState) {
-    //   if(this.state.isAddEvent !== nextState.isAddEvent){
-    //     return true;
-    //   } return false;
-    // }
+    shouldComponentUpdate(nextState) {
+      if(this.state.events !== nextState.events){
+        return true;
+      } return false;
+    }
 
     showDetailEvent = (detailEvent) => {
       this.setState({
@@ -112,7 +113,7 @@ class Home extends Component {
     render() {
       const {classes} = this.props;
         const { menu } = this.state;
-        return (
+        return ( 
             <div>
                 <AppBar position="static">
                 <Toolbar variant="regular">
