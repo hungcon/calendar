@@ -31,6 +31,7 @@ class Home extends Component {
               },
              events: [],
              isAddEvent: false,
+             change: false,
         };
     }
  
@@ -92,14 +93,43 @@ class Home extends Component {
     }
 
     componentDidMount() {
-      
-    }
+      var db = firebaseConnect.firestore();
+      db.collection("events").onSnapshot(function (snapshot) {
+              //console.log(snapshot.docChanges());
+              snapshot.docChanges().forEach((change) => {
+                  // if (change.type === "added") {
+                  //     console.log("New event: ", change.doc.data());
+                  // }
+                  if (change.type === "modified") {
+                    console.log("Change event: ", change.doc.id);
+                    var currentEvent = this.state.events;
+                    var index = currentEvent.findIndex(item => item.id === change.doc.id);
+                    var eventChange = {
+                      id: change.doc.id,
+                      client_name: change.doc.data().client_name,
+                      title: "Hẹn với " + change.doc.data().client_name,
+                      start: new Date(change.doc.data().start_time.seconds*1000),
+                      end: new Date(change.doc.data().start_time.seconds*1000 + change.doc.data().duration*3600000),
+                      location: change.doc.data().location,
+                      staff_name: change.doc.data().staff_name,
+                      duration: change.doc.data().duration
+                    }
+                    currentEvent[index] = eventChange;
+                    this.setState({events: currentEvent});
+                                  
+                  }
+                  if (change.type === "removed") {
+                      console.log("Removed city: ", change.doc.data());
+                  }
+              });
+          }.bind(this));
+  }
 
     addEvent= () => {  
       this.setState({isAddEvent: true});
     }
     shouldComponentUpdate(nextState) {
-      if(this.state.events !== nextState.events){
+      if(this.state.change !== nextState.change){
         return true;
       } return false;
     }
