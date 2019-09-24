@@ -67,24 +67,37 @@ class DetailEventDialog extends Component {
           location: this.state.location,
           user: localStorage.getItem('email'),
           staff_name: this.state.staffName
-        })
-        this.setState({isScheduleChange: true, open: false});
-
+        }).then(function(){
+          var eventUpdae = {
+            id: this.state.id,
+            client_name: this.state.clientName,
+            title: "Hẹn với " + this.state.clientName,
+            start: new Date(this.state.startTime),
+            end: new Date(new Date(this.state.startTime).setHours(new Date(this.state.startTime).getHours() + parseInt(this.state.duration))),
+            location: this.state.location,
+            staff_name: this.state.staffName,
+            duration: this.state.duration
+          }
+          this.props.updateEvent(eventUpdae);
+          this.setState({isScheduleChange: true, open: false});
+          this.props.closeDetailEvent(); 
+        }.bind(this))
       }
-
+      
       onCancelClick = () => {
         this.setState({open: false});
         this.props.closeDetailEvent();
       }
       removeEvent = () => {  
-        if(window.confirm('Are you want to cancle this schedule?') === true){
+        if(window.confirm('Do you want to cancle this schedule?') === true){
           const db = firebaseConnect.firestore();
           db.collection("events").doc(this.state.id).delete().then(() => {
             this.setState({
               isScheduleChange: true,
               open: false
             });
-            
+            this.props.getIDEventDelete(this.state.id);
+            this.props.closeDetailEvent();
           }).catch(function(error) {
               console.error("Error removing document: ", error);
           });

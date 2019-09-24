@@ -110,6 +110,25 @@ class Home extends Component {
         isDetailEvent: true
       });
     }
+
+    getEventAdd = (eventAdd) => {
+      this.state.events.push(eventAdd);
+      this.setState({events: this.state.events})
+    }
+
+    getIDEventDelete = (id) => {
+      var newState = this.state.events.filter(event => {
+        return event.id !== id;
+      })
+      this.setState({events: newState});
+    }
+
+    updateEvent = (event) => {
+      var currentEvent = this.state.events;
+      var index = currentEvent.findIndex(item => item.id === event.id);
+      currentEvent[index] = event;
+      this.setState({events: currentEvent});
+    }
     render() {
       const {classes} = this.props;
         const { menu } = this.state;
@@ -146,7 +165,7 @@ class Home extends Component {
                      </div>
                 </Container>
                 {this.state.isAddEvent && 
-                      <AddNewEventDialog closeAddEvent = { () => {this.setState({isAddEvent: false})}}/>}
+                      <AddNewEventDialog closeAddEvent = { () => {this.setState({isAddEvent: false})}}  getEventAdd = {this.getEventAdd}/>}
                 {this.state.isDetailEvent && 
                     <DetailEventDialog 
                       clientName={this.state.detailEvent.client_name} 
@@ -156,6 +175,8 @@ class Home extends Component {
                       startTime={this.state.detailEvent.start}
                       id={this.state.detailEvent.id}
                       closeDetailEvent = {() => this.setState({isDetailEvent: false})}
+                      getIDEventDelete = {this.getIDEventDelete}
+                      updateEvent = {this.updateEvent}
                       />}
             </div>
         );

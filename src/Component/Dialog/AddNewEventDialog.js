@@ -25,7 +25,8 @@ class AddNewEventDialog extends Component {
             duration: 0,
             location:'',
             staffName: '',
-            isAddEventOK: false
+            isAddEventOK: false,
+            eventAdd: {}
         };
     }
 
@@ -89,26 +90,33 @@ class AddNewEventDialog extends Component {
             }
             const db = firebaseConnect.firestore();
               db.collection("events").add(newEvent)
-            .then(function (docRef) {
-                console.log("Document written with ID: ", docRef.id);
-                this.setState({isAddEventOK: true, open: false});
-                console.log(this.state.isAddEventOK)
-               
+            .then(function (docRef) {  
+              var eventAdded = {
+                id: docRef.id,
+                client_name: this.state.clientName,
+                title: "Hẹn với " + this.state.clientName,
+                start: new Date(this.state.startTime),
+                end: new Date(new Date(this.state.startTime).setHours(new Date(this.state.startTime).getHours() + parseInt(this.state.duration))),
+                location: this.state.location,
+                staff_name: this.state.staffName,
+                duration: this.state.duration
+              };  
+             
+              this.setState({isAddEventOK: true, open: false, eventAdd: eventAdded});
+              //Gửi event lên component Home để cập nhật Calendar
+              this.sendEventAdd();
             }.bind(this))
             .catch(function(error) {
                 console.error("Error adding document: ", error);
             });
-            
           } 
            
       }
+      sendEventAdd = () => {
+        this.props.getEventAdd(this.state.eventAdd);
+        this.props.closeAddEvent();
+      }
 
-      // shouldComponentUpdate(nextState) {
-      //   if(this.state.isAddEventOK !== nextState.isAddEventOK){
-      //     return true;
-      //   }
-      //   return false;
-      // }
 
     render() {
         
@@ -149,7 +157,7 @@ class AddNewEventDialog extends Component {
                            placeholder="Duration (hours)"
                            required
                            type="number"
-                           inputProps={{ min: "0", step: "1" }}
+                           inputProps={{ min: "0", step: "0.5" }}
                            value={duration}
                            />
 

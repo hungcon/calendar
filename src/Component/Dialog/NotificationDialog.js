@@ -15,7 +15,7 @@ class NotificationDialog extends Component {
     }
     handleClose = () => {
         this.setState({open: false});
-        window.location.reload();
+       // window.location.reload();
     }
 
     render() {
@@ -26,7 +26,7 @@ class NotificationDialog extends Component {
                     <DialogTitle id="alert-dialog-title">Notification</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                        Your schedule have been update.
+                        Your schedule have been updated.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
