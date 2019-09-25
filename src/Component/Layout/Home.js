@@ -97,21 +97,25 @@ class Home extends Component {
       db.collection("events").onSnapshot(function (snapshot) {
               //console.log(snapshot.docChanges());
               snapshot.docChanges().forEach((change) => {
-                  // if (change.type === "added") {
-                  //   var currentEvent = this.state.events;
-                  //   var eventAdded = {
-                  //     id: change.doc.id,
-                  //     client_name: change.doc.data().client_name,
-                  //     title: "Hẹn với " + change.doc.data().client_name,
-                  //     start: new Date(change.doc.data().start_time.seconds*1000),
-                  //     end: new Date(change.doc.data().start_time.seconds*1000 + change.doc.data().duration*3600000),
-                  //     location: change.doc.data().location,
-                  //     staff_name: change.doc.data().staff_name,
-                  //     duration: change.doc.data().duration
-                  //   }
-                  //   this.state.events.push(eventAdded);
-                  //   this.setState({events: this.state.events});
-                  // }
+                  if (change.type === "added") {
+                    console.log(this.state.events.findIndex(item => item.id === change.doc.id))
+                    if(change.doc.data().user === localStorage.getItem('email')){
+                      if(this.state.events.findIndex(item => item.id === change.doc.id) === -1){
+                        var eventAdd = {
+                          id: change.doc.id,
+                          client_name: change.doc.data().client_name,
+                          title: "Hẹn với " + change.doc.data().client_name,
+                          start: new Date(change.doc.data().start_time.seconds*1000),
+                          end: new Date(change.doc.data().start_time.seconds*1000 + change.doc.data().duration*3600000),
+                          location: change.doc.data().location,
+                          staff_name: change.doc.data().staff_name,
+                          duration: change.doc.data().duration
+                        }
+                          this.state.events.push(eventAdd);
+                          this.setState({events: this.state.events})
+                      }
+                    }
+                  }
                   if (change.type === "modified") {
                     var currentEvent = this.state.events;
                     var index = currentEvent.findIndex(item => item.id === change.doc.id);
@@ -155,8 +159,10 @@ class Home extends Component {
     }
 
     getEventAdd = (eventAdd) => {
-      this.state.events.push(eventAdd);
-      this.setState({events: this.state.events})
+      if(this.state.events.findIndex(item => item.id === eventAdd.id) === -1){
+        this.state.events.push(eventAdd);
+        this.setState({events: this.state.events});
+      }
     }
 
     getIDEventDelete = (id) => {
