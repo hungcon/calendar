@@ -98,10 +98,21 @@ class Home extends Component {
               //console.log(snapshot.docChanges());
               snapshot.docChanges().forEach((change) => {
                   // if (change.type === "added") {
-                  //     console.log("New event: ", change.doc.data());
+                  //   var currentEvent = this.state.events;
+                  //   var eventAdded = {
+                  //     id: change.doc.id,
+                  //     client_name: change.doc.data().client_name,
+                  //     title: "Hẹn với " + change.doc.data().client_name,
+                  //     start: new Date(change.doc.data().start_time.seconds*1000),
+                  //     end: new Date(change.doc.data().start_time.seconds*1000 + change.doc.data().duration*3600000),
+                  //     location: change.doc.data().location,
+                  //     staff_name: change.doc.data().staff_name,
+                  //     duration: change.doc.data().duration
+                  //   }
+                  //   this.state.events.push(eventAdded);
+                  //   this.setState({events: this.state.events});
                   // }
                   if (change.type === "modified") {
-                    console.log("Change event: ", change.doc.id);
                     var currentEvent = this.state.events;
                     var index = currentEvent.findIndex(item => item.id === change.doc.id);
                     var eventChange = {
@@ -115,11 +126,13 @@ class Home extends Component {
                       duration: change.doc.data().duration
                     }
                     currentEvent[index] = eventChange;
-                    this.setState({events: currentEvent});
-                                  
+                    this.setState({events: currentEvent});  
                   }
                   if (change.type === "removed") {
-                      console.log("Removed city: ", change.doc.data());
+                    var newEvents = this.state.events.filter(item => {
+                      return item.id !== change.doc.id
+                    } )
+                    this.setState({events: newEvents});
                   }
               });
           }.bind(this));
