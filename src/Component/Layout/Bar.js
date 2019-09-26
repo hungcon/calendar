@@ -7,12 +7,31 @@ import Typography from '@material-ui/core/Typography';
 import SignInDialog from '../Dialog/SignInDialog';
 import SignUpDialog from '../Dialog/SignUpDialog';
 import { Redirect } from 'react-router-dom';
-
+import { Slide } from 'react-slideshow-image';
 const styles = (theme) => ({
     signUpButton: {
       marginRight: theme.spacing(2)
     }
   });
+
+  const slideImages = [
+    'images/1.jpg',
+    'images/2.jpg',
+    'images/3.jpg',
+    'images/4.jpg',
+    'images/5.jpg',
+  ];
+   
+  const properties = {
+    duration: 5000,
+    transitionDuration: 500,
+    infinite: true,
+    indicators: true,
+    arrows: true,
+    onChange: (oldIndex, newIndex) => {
+      console.log(`slide transition from ${oldIndex} to ${newIndex}`);
+    }
+  }
 
 
 class Login extends Component { 
@@ -74,6 +93,28 @@ class Login extends Component {
                 }
                 </Toolbar>
                 </AppBar>
+                <Slide {...properties}>
+                <div className="each-slide">
+                  <div style={{'backgroundImage': `url(${slideImages[0]})`}}>
+                  </div>
+                </div>
+                <div className="each-slide">
+                  <div style={{'backgroundImage': `url(${slideImages[1]})`}}>
+                  </div>
+                </div>
+                <div className="each-slide">
+                  <div style={{'backgroundImage': `url(${slideImages[2]})`}}>
+                  </div>
+                </div>
+                <div className="each-slide">
+                  <div style={{'backgroundImage': `url(${slideImages[3]})`}}>
+                  </div>
+                </div>
+                <div className="each-slide">
+                  <div style={{'backgroundImage': `url(${slideImages[4]})`}}>
+                  </div>
+                </div>
+              </Slide>
             </div>
         );
     }

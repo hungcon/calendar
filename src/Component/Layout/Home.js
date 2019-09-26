@@ -95,10 +95,8 @@ class Home extends Component {
     componentDidMount() {
       var db = firebaseConnect.firestore();
       db.collection("events").onSnapshot(function (snapshot) {
-              //console.log(snapshot.docChanges());
               snapshot.docChanges().forEach((change) => {
                   if (change.type === "added") {
-                    console.log(this.state.events.findIndex(item => item.id === change.doc.id))
                     if(change.doc.data().user === localStorage.getItem('email')){
                       if(this.state.events.findIndex(item => item.id === change.doc.id) === -1){
                         var eventAdd = {
