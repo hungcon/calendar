@@ -6,8 +6,9 @@ import Home from './Component/Layout/Home';
 class App extends Component {
 
   render() {
+    console.log(window.location.pathname)
     return (
-        <BrowserRouter basename="">
+        <BrowserRouter basename="/">
             <Route path="/" exact component={Bar} /> 
             <PrivateRoute path="/home" exact component={Home} /> 
         </BrowserRouter >
