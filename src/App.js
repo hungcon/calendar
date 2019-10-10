@@ -9,7 +9,7 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <BrowserRouter basename={window.location.pathname || ''} forceRefresh={true}>
+        <BrowserRouter basename=''>
             <Route path="/" exact component={Bar} /> 
             <PrivateRoute path="/home" exact component={Home} /> 
         </BrowserRouter >
