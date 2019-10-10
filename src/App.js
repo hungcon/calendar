@@ -7,7 +7,7 @@ class App extends Component {
 
   render() {
     return (
-        <BrowserRouter basename={window.location.pathname}>
+        <BrowserRouter basename="">
             <Route path="/" exact component={Bar} /> 
             <PrivateRoute path="/home" exact component={Home} /> 
         </BrowserRouter >
