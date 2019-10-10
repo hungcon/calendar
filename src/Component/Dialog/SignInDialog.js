@@ -11,6 +11,7 @@ import validate from 'validate.js';
 import constraints from '../../constrains';
 import {firebaseConnect} from '../../firebaseConnect';
 import readingTime from 'reading-time';
+import AuthProviderList from '../AuthProviderList/AuthProviderList';
 
 class SignInDialog extends Component {
 
@@ -81,7 +82,7 @@ class SignInDialog extends Component {
                 this.setState({ 
                     errors: null,
                 });
-                this.props.history.push({pathname: 'home'});  
+                this.props.history.push({pathname: 'home'}); 
               })
               .catch((reason) => {
                 const code = reason.code;
@@ -122,6 +123,7 @@ class SignInDialog extends Component {
                             Some features might be unavailable until you sign in.
                             While you're signed in you can manage your account.
                         </DialogContentText>
+                        <AuthProviderList historyProps = {this.props.history}/>
                         <form>
                             <TextField
                             autoComplete="email"
@@ -165,4 +167,4 @@ class SignInDialog extends Component {
         );
     }
 }
-export default (SignInDialog);
+export default SignInDialog;
